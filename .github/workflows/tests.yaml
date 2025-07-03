@@ -1,0 +1,69 @@
+name: Run E2E Selenium Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    services:
+      webapp:
+        image: node:18
+        ports:
+          - 3000:3000
+        options: >-
+          --health-cmd="curl -f http://localhost:3000 || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install backend dependencies and build
+        run: |
+          cd backend/
+          npm install
+          npm run build
+
+      - name: Start frontend app in background
+        run: |
+          cd frontend/
+          npm start &
+
+      - name: Wait for app to be ready
+        run: |
+          for i in {1..30}; do
+            curl -f http://localhost:3000 && break
+            sleep 1
+          done
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Python dependencies
+        run: pip install selenium pytest
+
+      - name: Install Google Chrome
+        run: |
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+          google-chrome --version
+
+      - name: Install ChromeDriver
+        uses: nanasess/setup-chromedriver@v1
+        with:
+          chromedriver-version: latest
+
+      - name: Run Selenium tests
+        run: pytest tests/e2e_tests.py
+
+      - name: Archive test reports (optional)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: tests/
