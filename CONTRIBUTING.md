@@ -1,0 +1,3 @@
+- DevOps (CI/CD, Docker, GitHub Actions) : L. Goudier
+- Tests (Écriture des tests unitaires / d’intégration) : I. Snacel & C. Ndong
+- Frontend / Backend : A. Biam
