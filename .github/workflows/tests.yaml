@@ -7,16 +7,6 @@ on:
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
-    services:
-      webapp:
-        image: node:18
-        ports:
-          - 3000:3000
-        options: >-
-          --health-cmd="curl -f http://localhost:3000 || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
 
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +20,7 @@ jobs:
       - name: Start frontend app in background
         run: |
           cd frontend/
-          npm start &
+          nohup npm start > app.log 2>&1 &
 
       - name: Wait for app to be ready
         run: |
