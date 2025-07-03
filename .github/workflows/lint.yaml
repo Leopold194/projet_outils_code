@@ -8,6 +8,10 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: backend/
+
     steps:
       - uses: actions/checkout@v3
 
@@ -15,7 +19,6 @@ jobs:
         with:
           node-version: 18
 
-      - run: |
-          cd backend/
-          npm install
-          npm run lint
+      - run: rm -rf node_modules package-lock.json
+      - run: npm install
+      - run: npx eslint .
