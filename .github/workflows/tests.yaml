@@ -15,7 +15,7 @@ jobs:
         run: |
           cd backend/
           npm install
-          npm start
+          nohup npm start &
 
       - name: Start frontend app in background
         run: |
